@@ -24,11 +24,20 @@ func (h *GetCarHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "Não busco por que estou com preguiça!")
 }
 
+type DeleteCarHandler struct{}
+
+func (h *DeleteCarHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	params := httptreemux.ContextParams(r.Context())
+	fmt.Fprintf(w, "Eu deveria deletar um carro chamado: %s!", params["id"])
+	fmt.Fprintln(w, "Não apago por que sou chato!")
+}
+
 func main() {
 	addr := "127.0.0.1:8081"
 	router := httptreemux.NewContextMux()
 	router.Handler(http.MethodGet, "/cars/:id", &GetCarHandler{})
 	router.Handler(http.MethodPut, "/cars/:id", &UpsertCarHandler{})
+	router.Handler(http.MethodDelete, "/cars/:id", &DeleteCarHandler{})
 
 	log.Printf("Running web server on: http://%s\n", addr)
 	log.Fatal(http.ListenAndServe(addr, router))
